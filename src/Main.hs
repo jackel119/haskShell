@@ -3,6 +3,7 @@ module Main where
 import System.Process
 import System.Directory
 import System.Posix.User
+import System.IO
 
 builtins :: [String]
 builtins = ["dc"]
@@ -13,10 +14,12 @@ main =  shell
             shell :: IO ()
             shell = do
                     userName <- getEffectiveUserName
-                    putStrLn (userName ++ "@HaskShell->")
+                    relDir <- getRelativeDir
+                    putStr (userName ++ "@HaskShell~> " ++ relDir ++ " ")
+                    hFlush stdout
                     command <- getLine
                     if command == "exit" then do
-                                                 putStrLn "Goodbye!"
+                                                 putStrLn "Goodbye! D:"
                                                  return ()
                                          else do 
                                                  executeLine command
@@ -40,6 +43,7 @@ commandFinder string = commandFinder' [] string
     commandFinder' accum []       = (accum, [])
     commandFinder' accum (' ':ys) = (accum, ys)
     commandFinder' accum (y:ys)   =  commandFinder' (y:accum) ys
+
       
 runBuiltin :: (String, String) -> IO ()
 runBuiltin (a, b)
@@ -50,3 +54,21 @@ shellChangeDirectory [] = do
                           homeDir <- getHomeDirectory
                           setCurrentDirectory homeDir
 shellChangeDirectory a  = setCurrentDirectory a
+
+
+getRelativeDir :: IO String
+getRelativeDir =  do
+                  homeDir <- getHomeDirectory
+                  curDir <- getCurrentDirectory
+                  relDir <- getRelativeDir' homeDir curDir
+                  return relDir
+                  where
+                    getRelativeDir' :: String -> String -> IO FilePath
+                    getRelativeDir' [] [] = return "~/"
+                    getRelativeDir' [] a = return ("~" ++ a)
+                    getRelativeDir' _ [] = getCurrentDirectory
+                    getRelativeDir' (x:xs) (y:ys)
+                      | x == y = getRelativeDir' xs ys
+                      | x /= y = getCurrentDirectory
+
+
