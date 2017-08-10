@@ -1,12 +1,12 @@
-module Main where
-
 import System.Process
 import System.Directory
 import System.Posix.User
 import System.IO
+import ConfigRead
+import Utils
 
 builtins :: [String]
-builtins = ["dc"]
+builtins = ["cd"]
 
 main :: IO ()
 main =  shell
@@ -36,18 +36,10 @@ executeLine a
     where
     (command, leftoverString) = commandFinder a
 
-commandFinder :: String -> (String, String)
-commandFinder string = commandFinder' [] string
-  where
-    commandFinder' :: String -> String -> (String, String)
-    commandFinder' accum []       = (accum, [])
-    commandFinder' accum (' ':ys) = (accum, ys)
-    commandFinder' accum (y:ys)   =  commandFinder' (y:accum) ys
-
       
 runBuiltin :: (String, String) -> IO ()
 runBuiltin (a, b)
-  | a == "dc" = shellChangeDirectory b
+  | a == "cd" = shellChangeDirectory b
 
 shellChangeDirectory :: String -> IO ()
 shellChangeDirectory [] = do

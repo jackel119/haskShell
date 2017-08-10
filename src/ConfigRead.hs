@@ -1,6 +1,11 @@
+
+module ConfigRead
+  where
+
+
 import System.IO
 import Data.Maybe
-import qualified Data.Text as T
+import Utils
 
 type Line =  (String, String)
 
@@ -23,10 +28,3 @@ notEmpty (a,b)
   | a == "" && all (==' ') b = False
   | otherwise = True
 
-commandFinder :: String -> (String, String)
-commandFinder = commandFinder' []
-  where
-    commandFinder' :: String -> String -> (String, String)
-    commandFinder' accum []       = (reverse accum, [])
-    commandFinder' accum (' ':ys) = (reverse accum, ys)
-    commandFinder' accum (y:ys)   =  commandFinder' (y:accum) ys
