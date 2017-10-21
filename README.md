@@ -1,6 +1,6 @@
 # HaskShell
 
-Currently a VERY basic.
+Currently a VERY basic shell. More of an excercise in Haskell than an actual project, but perhaps I'll come back to this later.
 
 Things to add:
 
